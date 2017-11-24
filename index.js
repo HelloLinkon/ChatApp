@@ -4,6 +4,8 @@ var mongo = require('mongodb').MongoClient;
 var io = require('socket.io')(server);
 var path = require('path');
 
+var port = process.env.port || 3000;
+
 
 // connect mongo db
 mongo.connect('mongodb://127.0.0.1/bluebricks1', function(err, db){
@@ -79,7 +81,7 @@ mongo.connect('mongodb://127.0.0.1/bluebricks1', function(err, db){
 });
 
 
-server.listen(3000);
+server.listen(port);
 
 var users = names = {};
 
