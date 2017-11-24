@@ -176,8 +176,8 @@
 
 
 	var channel = "some";
-	var userId = 1;
-	var userName = "Client";
+	var userId = 2;
+	var userName = "host";
 
 
 </script>
@@ -206,16 +206,16 @@
 
 			socket.on('chat.' + channel, function(playload){
 
-				
+				// console.log(playload);
 				// this.messages.push(playload);
 				// this.messages.push(['chat', playload[1], playload[2]]);
 				
+
 				if(playload["id"] == userId)
 				{
-					console.log("client load");
+					console.log("host load");
 					console.log(playload["res"]);
 					var one = this.messages;
-					// one = [];
 					playload["res"].forEach(function(item){
 						console.log(item);
 						// console.log(typeof(item["info"]));
@@ -223,9 +223,11 @@
 						// console.log(one);
 					});
 				}
-				// console.log("User "+ playload["userId"]);
 
+				// console.log(this.messages);
 				
+					
+			
 				
 				// console.log(typeof(playload))
 
