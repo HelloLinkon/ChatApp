@@ -18,7 +18,7 @@
 		}
 
 		#chat{
-			width: 30%;
+			width: 23%;
 			margin: 100px auto;
 		}
 
@@ -120,15 +120,16 @@
 
 </head>
 <body >
-
+<!-- main chat body -->
 <div id="chat">
-
+	<!-- header section -->
 	<div class="header_section">
 		<h4>BlueBricks Chat</h4>
 	</div>
-
+	<!-- all messages section -->
 	<div class="msg_body_section" id="your_div">
 		<div class="message" v-for = "message in messages">
+
 			<div class="" v-if="isPoster(message['userId'])">
 				<div class="pic pull_right"></div>
 				<p class="me">{{ message["msg"] }}</p>
@@ -147,33 +148,27 @@
 
 		</div>
 	</div>
-
+	<!-- write message section -->
 	<div class="writing_section">
 		<form v-on:submit="send">
 			<input type="text" name="" id="message" v-model="message" placeholder="Write Message">
 			<button>send</button>
 		</form>
 	</div>
-
-	
-	
-	
-
 </div>
 
+<!-- socket.io -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<!-- vue js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.8/vue.min.js"></script>
+<!-- jquery -->
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
 
+<!-- initialize stage -->
 <script type="text/javascript">
-	function randomIntFromInterval(min,max)
-	{
-	    return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-
 
 	var channel = "some";
 	var userId = 1;
@@ -182,12 +177,15 @@
 
 </script>
 
+
+<!-- vue js part -->
 <script type="text/javascript">
 	
+	// connect with server
 	var socket = io('http://localhost:3000');
 
 	
-
+	// create vue instance 
 	new Vue({
 		el: '#chat',
 
@@ -205,29 +203,18 @@
 			});
 
 			socket.on('chat.' + channel, function(playload){
-
-				
-				// this.messages.push(playload);
-				// this.messages.push(['chat', playload[1], playload[2]]);
 				
 				if(playload["id"] == userId)
 				{
-					console.log("client load");
-					console.log(playload["res"]);
+					
 					var one = this.messages;
-					// one = [];
 					playload["res"].forEach(function(item){
-						console.log(item);
-						// console.log(typeof(item["info"]));
+						
 						one.push(item);
-						// console.log(one);
+						
 					});
 				}
-				// console.log("User "+ playload["userId"]);
-
 				
-				
-				// console.log(typeof(playload))
 
 			}.bind(this));
 
@@ -235,9 +222,7 @@
 
 				console.log(playload);
 				this.messages.push(playload);
-				// this.messages.push(['chat', playload[1], playload[2]]);
 				
-
 
 			}.bind(this));
 		},
@@ -247,7 +232,6 @@
 			send: function(e){
 				e.preventDefault();
 
-				// var playload = [channel, userId, this.message];
 				var playload = {"userId" : userId, "msg" : this.message};
 
 				if(this.message == '')

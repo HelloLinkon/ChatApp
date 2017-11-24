@@ -2,12 +2,11 @@ var app = require('express')();
 var server = require('http').Server(app);
 var mongo = require('mongodb').MongoClient;
 var io = require('socket.io')(server);
-
 var path = require('path');
 
 
-
-mongo.connect('mongodb://127.0.0.1/chatapp4', function(err, db){
+// connect mongo db
+mongo.connect('mongodb://127.0.0.1/bluebricks1', function(err, db){
 
 	if(err)
 	{
@@ -16,16 +15,15 @@ mongo.connect('mongodb://127.0.0.1/chatapp4', function(err, db){
 
 	console.log("mongo connected");
 
-
+		// socket connection
 		io.on('connection', function(socket){
 			
-
+			// create collection for chats
 			var chat = db.collection('chats');
 
-			
-
-
+			// user join section
 			socket.on('join', function(user){
+				
 				logdata(user[2] + "A user has connected" + user[1]);
 				socket.UserId = user[1];
 				socket.UserName = user[2];
@@ -36,6 +34,7 @@ mongo.connect('mongodb://127.0.0.1/chatapp4', function(err, db){
 					'socketid' : socket.id 
 				}
 
+				// find previous chats
 				chat.find().limit(100).sort({_id:1}).toArray(function(err, res){
 
 					if(err)
@@ -51,6 +50,7 @@ mongo.connect('mongodb://127.0.0.1/chatapp4', function(err, db){
 				}
 
 				updateNames();
+
 
 				socket.on('chat', function(playload){
 
@@ -84,11 +84,7 @@ server.listen(3000);
 var users = names = {};
 
 
-
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
-});
-
+// routing
 app.get('/client', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
@@ -99,7 +95,7 @@ app.get('/host', function(req, res) {
 
 
 
-
+// console log 
 function logdata(msg){
 	var d = new Date();
 	var time = '['+d.getHours()+ ':'+ 
