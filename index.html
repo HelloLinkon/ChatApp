@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Blue Brick Chat</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<style type="text/css">
+		
+		body{
+			margin: 0;
+			padding: 0;
+			background: #ebeaee;
+		}
+
+		p{
+			margin: 0;
+		}
+
+		#chat{
+			width: 30%;
+			margin: 100px auto;
+		}
+
+		.header_section{
+			width: 100%;
+			height: 50px;
+			background: #ff2b00;
+		}
+
+		.header_section h4
+		{
+			margin: 0;
+		    color: white;
+		    padding: 15px;
+		}
+
+		.msg_body_section{
+			width: 100%;
+			height: 480px;
+			background: white;
+			overflow-y: auto;
+		}
+
+		.writing_section{
+			border-top: 1px solid #e6deff;
+    		border-bottom: 1px solid #e6deff;
+		}
+
+		.writing_section input{
+			width: 80%;
+		    border: none;
+		    height: 36px;
+		    padding-left: 10px;
+		}
+
+		.writing_section button{
+			border: none;
+		    background: #ff2b00;
+		    color: white;
+		    height: 36px;
+		    width: 18%;
+		}
+
+		.message{
+			margin: 20px;
+		}
+
+		
+
+		.me{
+			background: #ff2b00;
+			width: 60%;
+		    margin: 0 40px;
+		    padding: 10px 15px;
+		    border-radius: 20px 0px 20px 20px;
+		    float: right;
+		    clear: both;
+		    color: white;
+		    box-shadow: -2px 2px 5px 0px #b1a8a8;
+		}
+
+		.them{
+			background: #eaecf2;
+			width: 60%;
+		    margin: 0 40px;
+		    padding: 10px 15px;
+		    border-radius: 0px 20px 20px 20px;
+		    float: left;
+		    clear: both;
+		    box-shadow: -2px 2px 5px 0px #b1a8a8;
+		}
+
+		.pic{
+			clear: both;
+			width: 35px;
+			height: 35px;
+			background: #ff2b00;
+			border-radius: 50%;
+		}
+
+		.date{
+			clear: both;
+		    margin: 5px 50px;
+		    font-size: 11px;
+		    color: #8c8c8c;
+		}
+
+		.pull_left{
+			float: left;
+		}
+
+		.pull_right{
+			float: right;
+		}
+
+
+
+	</style>
+
+</head>
+<body >
+
+<div id="chat">
+
+	<div class="header_section">
+		<h4>BlueBricks Chat</h4>
+	</div>
+
+	<div class="msg_body_section" id="your_div">
+		<div class="message" v-for = "message in messages">
+			<div class="" v-if="isPoster(message[1])">
+				<div class="pic pull_right"></div>
+				<p class="me">{{ message[2] }}</p>
+				<span class="date pull_right">{{ date.getHours()+ ':'+ 
+		date.getMinutes()+':'+ date.getSeconds() }}</span>
+			</div>
+
+			<div class="" v-if="!isPoster(message[1])">
+				<div class="pic pull_left"></div>
+				<p class="them">{{ message[2] }}</p>
+			
+				<span class="date pull_left">{{ date.getHours()+ ':'+ 
+		date.getMinutes()+':'+ date.getSeconds() }}</span>
+			</div>
+			
+
+		</div>
+	</div>
+
+	<div class="writing_section">
+		<form v-on:submit="send">
+			<input type="text" name="" id="message" v-model="message" placeholder="Write Message">
+			<button>send</button>
+		</form>
+	</div>
+
+	
+	
+	
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.8/vue.min.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+	var channel = "some";
+	var userId = prompt("enter you id");
+	var userName = "linku";
+</script>
+
+<script type="text/javascript">
+	
+	var socket = io('http://localhost:3000');
+
+	
+
+	new Vue({
+		el: '#chat',
+
+		data: {
+			messages: [],
+			message: null,
+			date: new Date()
+		},
+
+		mounted: function(){
+
+			socket.on('connect', function(){
+				socket.emit('join', [channel, userId, userName]);
+				console.log("server connection");
+			});
+
+			socket.on('chat.' + channel, function(playload){
+				this.messages.push(['chat', playload[1], playload[2]]);
+				// var objDiv = document.getElementById("your_div");
+				// console.log("top0: "+ objDiv.scrollTop);
+	   //          objDiv.scrollTop = objDiv.scrollHeight;
+
+				// console.log("top: "+ objDiv.scrollTop);
+
+				// console.log("scrollHeight: "+ objDiv.scrollHeight);
+
+			}.bind(this));
+		},
+
+		methods: {
+
+			send: function(e){
+				e.preventDefault();
+
+				var playload = [channel, userId, this.message];
+
+				if(this.message == '')
+				{
+					this.message = null;
+				}
+
+
+				if(this.message != null)
+				{
+					socket.emit('chat', playload);
+				}
+
+				this.message = null;
+			},
+
+			isPoster: function(id){
+				if(userId == id)
+				{
+					return true;
+				}
+
+				return false;
+			}
+
+		}
+	});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
