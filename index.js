@@ -8,7 +8,7 @@ var port = process.env.port || 3000;
 
 
 // connect mongo db
-mongo.connect('mongodb://127.0.0.1/bluebricks1', function(err, db){
+mongo.connect('mongodb://chatapphello.herokuapp.com/bluebricks1', function(err, db){
 
 	if(err)
 	{
